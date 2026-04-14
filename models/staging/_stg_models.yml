@@ -1,0 +1,78 @@
+version: 2
+
+models:
+  - name: stg_departments
+    description: "TU/e departments and faculties. 9 academic faculties + 6 support departments."
+    columns:
+      - name: department_id
+        description: "Primary key."
+        tests: [not_null, unique]
+      - name: department_name
+        tests: [not_null]
+
+  - name: stg_employees
+    description: "Cleaned employee records. Used as reference for principal investigators on research projects."
+    columns:
+      - name: employee_id
+        description: "Primary key."
+        tests: [not_null, unique]
+      - name: department_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_departments')
+              field: department_id
+      - name: employment_type
+        tests:
+          - accepted_values:
+              values: [full_time, part_time, temporary, visiting]
+      - name: hire_date
+        tests: [not_null]
+
+  - name: stg_research_projects
+    description: "Research projects with funding details. Covers NWO, ERC, Horizon Europe, and industry partners (ASML, Philips, NXP)."
+    columns:
+      - name: project_id
+        description: "Primary key."
+        tests: [not_null, unique]
+      - name: department_id
+        tests:
+          - relationships:
+              to: ref('stg_departments')
+              field: department_id
+      - name: principal_investigator_id
+        tests:
+          - relationships:
+              to: ref('stg_employees')
+              field: employee_id
+      - name: status
+        tests:
+          - accepted_values:
+              values: [active, completed, pending, terminated]
+      - name: grant_amount
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "grant_amount > 0"
+
+  - name: stg_grant_payments
+    description: "Individual grant payment disbursements against research projects."
+    columns:
+      - name: payment_id
+        description: "Primary key."
+        tests: [not_null, unique]
+      - name: project_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_research_projects')
+              field: project_id
+      - name: payment_type
+        tests:
+          - accepted_values:
+              values: [advance, milestone, final, overhead]
+      - name: amount
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "amount > 0"

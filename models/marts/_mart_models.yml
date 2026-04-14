@@ -1,0 +1,31 @@
+version: 2
+
+models:
+
+  - name: mart_research_funding
+    description: >
+      Research project portfolio with payment progress and funding body details.
+      One row per research project. Shows how much of each grant has been disbursed.
+    columns:
+      - name: project_id
+        description: "Primary key."
+        tests: [not_null, unique]
+      - name: grant_amount
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "grant_amount > 0"
+      - name: pct_grant_received
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "pct_grant_received >= 0"
+
+  - name: mart_grant_utilization
+    description: >
+      Aggregated grant utilization by department and academic year.
+      Includes funding body breakdown (NWO, ERC, Horizon Europe, industry).
+      One row per department per academic year.
+    columns:
+      - name: utilization_rate
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: "utilization_rate between 0 and 1.1 or utilization_rate is null"
