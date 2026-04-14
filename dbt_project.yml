@@ -1,5 +1,5 @@
 dbt-cloud:
-  project-id: 1490
+  project-id: 16897
 
 name: databricks_university
 version: "1.0.0"
