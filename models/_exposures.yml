@@ -1,0 +1,20 @@
+version: 2
+
+exposures:
+
+  - name: research_grant_utilization_report
+    label: "Research Grant Utilization Report"
+    type: analysis
+    maturity: high
+    description: >
+      Quarterly grant utilization report for TU/e Finance & Research Office.
+      Tracks payment progress against awarded grant amounts by funding body
+      (NWO, ERC, Horizon Europe, and Eindhoven industry partners: ASML, Philips, NXP).
+
+    depends_on:
+      - ref('mart_grant_utilization')
+      - ref('mart_research_funding')
+
+    owner:
+      name: "Finance & Research Office"
+      email: "finance@tue.nl"

@@ -1,0 +1,53 @@
+version: 2
+
+sources:
+
+  - name: raw_hr
+    database: demo_tue
+    schema: raw
+    description: "HR domain raw tables — employees and departments (used as reference for research PIs)."
+    tables:
+      - name: departments
+        columns:
+          - name: department_id
+            tests: [not_null, unique]
+          - name: department_name
+            tests: [not_null]
+
+      - name: employees
+        columns:
+          - name: employee_id
+            tests: [not_null, unique]
+          - name: department_id
+            tests: [not_null]
+          - name: employment_type
+            tests:
+              - accepted_values:
+                  values: [full_time, part_time, temporary, visiting]
+
+  - name: raw_finance
+    database: demo_tue
+    schema: raw
+    description: "Research finance raw tables — projects and grant payments."
+    tables:
+      - name: research_projects
+        columns:
+          - name: project_id
+            tests: [not_null, unique]
+          - name: status
+            tests:
+              - accepted_values:
+                  values: [active, completed, pending, terminated]
+          - name: grant_amount
+            tests: [not_null]
+
+      - name: grant_payments
+        columns:
+          - name: payment_id
+            tests: [not_null, unique]
+          - name: project_id
+            tests: [not_null]
+          - name: payment_type
+            tests:
+              - accepted_values:
+                  values: [advance, milestone, final, overhead]
