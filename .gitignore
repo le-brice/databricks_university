@@ -7,3 +7,4 @@ __pycache__/
 
 # Generated SQL output — run scripts/sql/ manually against Databricks
 output/
+dbt_internal_packages/
