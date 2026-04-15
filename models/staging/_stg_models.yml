@@ -53,7 +53,8 @@ models:
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: "grant_amount > 0"
+              arguments:
+                expression: "grant_amount > 0"
 
   - name: stg_grant_payments
     description: "Individual grant payment disbursements against research projects."
@@ -75,4 +76,5 @@ models:
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: "amount > 0"
+              arguments:
+                expression: "amount > 0"
