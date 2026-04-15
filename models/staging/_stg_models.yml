@@ -6,51 +6,51 @@ models:
     columns:
       - name: department_id
         description: "Primary key."
-        tests: [not_null, unique]
+        data_tests: [not_null, unique]
       - name: department_name
-        tests: [not_null]
+        data_tests: [not_null]
 
   - name: stg_employees
     description: "Cleaned employee records. Used as reference for principal investigators on research projects."
     columns:
       - name: employee_id
         description: "Primary key."
-        tests: [not_null, unique]
+        data_tests: [not_null, unique]
       - name: department_id
-        tests:
+        data_tests:
           - not_null
           - relationships:
               to: ref('stg_departments')
               field: department_id
       - name: employment_type
-        tests:
+        data_tests:
           - accepted_values:
               values: [full_time, part_time, temporary, visiting]
       - name: hire_date
-        tests: [not_null]
+        data_tests: [not_null]
 
   - name: stg_research_projects
     description: "Research projects with funding details. Covers NWO, ERC, Horizon Europe, and industry partners (ASML, Philips, NXP)."
     columns:
       - name: project_id
         description: "Primary key."
-        tests: [not_null, unique]
+        data_tests: [not_null, unique]
       - name: department_id
-        tests:
+        data_tests:
           - relationships:
               to: ref('stg_departments')
               field: department_id
       - name: principal_investigator_id
-        tests:
+        data_tests:
           - relationships:
               to: ref('stg_employees')
               field: employee_id
       - name: status
-        tests:
+        data_tests:
           - accepted_values:
               values: [active, completed, pending, terminated]
       - name: grant_amount
-        tests:
+        data_tests:
           - not_null
           - dbt_utils.expression_is_true:
               arguments:
@@ -61,20 +61,48 @@ models:
     columns:
       - name: payment_id
         description: "Primary key."
-        tests: [not_null, unique]
+        data_tests: [not_null, unique]
       - name: project_id
-        tests:
+        data_tests:
           - not_null
           - relationships:
               to: ref('stg_research_projects')
               field: project_id
       - name: payment_type
-        tests:
+        data_tests:
           - accepted_values:
               values: [advance, milestone, final, overhead]
       - name: amount
-        tests:
+        data_tests:
           - not_null
           - dbt_utils.expression_is_true:
               arguments:
                 expression: "> 0"
+
+  - name: funding_per_theme
+    description: "funding summary by research theme."
+    columns:
+      - name: research_theme
+        description: "research theme associated with the funded projects."
+        data_tests: [not_null, unique]
+      - name: project_count
+        description: "number of funded projects in the research theme."
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "> 0"
+      - name: total_funding_eur
+        description: "total funding amount awarded to the research theme in eur."
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+      - name: avg_grant_eur
+        description: "average grant amount per project in the research theme in eur."
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
