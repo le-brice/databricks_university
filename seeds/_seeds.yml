@@ -1,0 +1,29 @@
+version: 2
+
+seeds:
+
+  - name: funding_bodies
+    description: >
+      Reference table of grant funding bodies active at TU/e.
+      Includes government funders (NWO), EU programmes (ERC, Horizon Europe),
+      and Eindhoven-area industry partners (ASML, Philips, NXP, Brainport, Eindhoven Engine).
+      Use this to enrich research project data with funder-level context.
+    columns:
+      - name: funding_body
+        description: "Primary key. Matches funding_body in stg_research_projects."
+        tests: [not_null, unique]
+      - name: funding_type
+        description: "Broad category: government, EU, or industry."
+        tests:
+          - accepted_values:
+              values: [government, EU, industry]
+      - name: country
+        description: "Country or region of the funding body."
+      - name: focus_area
+        description: "Primary research focus the funder supports."
+      - name: typical_min_grant_eur
+        description: "Typical minimum grant size in euros."
+      - name: typical_max_grant_eur
+        description: "Typical maximum grant size in euros."
+      - name: payment_schedule_notes
+        description: "Describes how this funder typically disburses payments."

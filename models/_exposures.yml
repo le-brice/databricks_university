@@ -7,9 +7,10 @@ exposures:
     type: analysis
     maturity: high
     description: >
-      Quarterly grant utilization report for TU/e Finance & Research Office.
+      Quarterly grant utilization report for the TU/e Finance & Research Office.
       Tracks payment progress against awarded grant amounts by funding body
       (NWO, ERC, Horizon Europe, and Eindhoven industry partners: ASML, Philips, NXP).
+      Produced from mart_grant_utilization and mart_research_funding.
 
     depends_on:
       - ref('mart_grant_utilization')
@@ -18,3 +19,38 @@ exposures:
     owner:
       name: "Finance & Research Office"
       email: "finance@tue.nl"
+
+  - name: grant_risk_dashboard
+    label: "Grant Risk Dashboard"
+    type: dashboard
+    maturity: medium
+    description: >
+      Power BI dashboard for the Finance & Research Office to monitor at-risk grants.
+      Shows projects where disbursement is falling behind schedule, with urgency scores
+      to prioritise funder follow-up. Updated daily from mart_at_risk_projects.
+      Connected to Azure Databricks via the Power BI Databricks connector.
+
+    depends_on:
+      - ref('mart_at_risk_projects')
+      - ref('mart_research_funding')
+
+    owner:
+      name: "Finance & Research Office"
+      email: "finance@tue.nl"
+
+  - name: pi_research_portfolio
+    label: "Principal Investigator Portfolio"
+    type: dashboard
+    maturity: low
+    description: >
+      Self-service Power BI report for individual PIs to track their own grant portfolio.
+      Shows grant amounts, payment progress, and upcoming milestones for projects
+      where they are the principal investigator. Demonstrates the self-service analytics
+      model enabled by dbt — no ad-hoc SQL requests needed.
+
+    depends_on:
+      - ref('mart_research_funding')
+
+    owner:
+      name: "Research Office"
+      email: "research@tue.nl"

@@ -1,0 +1,9 @@
+funding_body,funding_type,country,focus_area,typical_min_grant_eur,typical_max_grant_eur,payment_schedule_notes
+NWO,government,Netherlands,Science broadly,50000,2000000,Milestone-based quarterly disbursements
+ERC,EU,EU,Frontier research,150000,2500000,Annual advance plus milestone payments
+Horizon Europe,EU,EU,Innovation and cross-border collaboration,500000,10000000,Consortium milestone-based payments
+ASML Research,industry,Netherlands,Semiconductor and photonics,100000,5000000,Quarterly advance payments
+Philips Research,industry,Netherlands,Healthcare technology,50000,2000000,Semi-annual milestone payments
+NXP Semiconductors,industry,Netherlands,Embedded systems and IoT,75000,3000000,Annual milestone payments
+Brainport Development,industry,Netherlands,Regional innovation ecosystem,25000,500000,Project-phase disbursements
+Eindhoven Engine,industry,Netherlands,Deep tech and startup acceleration,10000,250000,Quarterly disbursements
