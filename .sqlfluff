@@ -1,0 +1,15 @@
+[sqlfluff]
+templater = dbt
+dialect = sparksql
+
+# ST06: column ordering (wildcard then simple then calculations) breaks
+# intentional logical groupings in complex CTEs — excluded project-wide.
+exclude_rules = ST06
+
+[sqlfluff:templater:dbt]
+project_dir = ./
+profiles_dir = ./
+profile = tue_databricks
+
+[sqlfluff:templater:jinja]
+apply_dbt_builtins = true
