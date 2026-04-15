@@ -1,0 +1,50 @@
+version: 2
+
+models:
+
+  - name: int_project_payment_status
+    description: >
+      Classifies each research project's payment health based on how fast funding
+      is being disbursed relative to how far into the project we are.
+      This is the central business logic layer — upstream marts consume it rather
+      than re-implementing disbursement logic independently.
+      Grain: one row per research project.
+    columns:
+      - name: project_id
+        description: "Primary key. Foreign key to stg_research_projects."
+        tests: [not_null, unique]
+      - name: payment_status
+        description: >
+          Derived classification:
+          - on_track: disbursement rate roughly matches time elapsed
+          - at_risk: disbursing >20 percentage points slower than time elapsed
+          - ahead_of_schedule: disbursing >10 percentage points faster than time elapsed
+          - no_payments_received: active project >10% through with zero payments
+          - final_overdue: completed project with no final payment recorded
+          - closed: completed and final payment received
+          - not_started: project is in pending status
+          - terminated: project was cancelled
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - on_track
+                  - at_risk
+                  - ahead_of_schedule
+                  - no_payments_received
+                  - final_overdue
+                  - closed
+                  - not_started
+                  - terminated
+      - name: disbursement_rate
+        description: "Fraction of grant amount received so far (0–1+)."
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+      - name: pct_time_elapsed
+        description: "Fraction of project duration that has elapsed (0–1+). Null for projects with no end date."
+      - name: payment_velocity
+        description: >
+          disbursement_rate minus pct_time_elapsed.
+          Positive = ahead of expected pace; negative = behind.
