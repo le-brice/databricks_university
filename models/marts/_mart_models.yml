@@ -72,7 +72,8 @@ models:
         description: "at_risk, no_payments_received, or final_overdue."
         tests:
           - accepted_values:
-              values: [at_risk, no_payments_received, final_overdue]
+              arguments:
+                values: [at_risk, no_payments_received, final_overdue]
       - name: urgency_score
         description: >
           Outstanding grant amount weighted by how far into the project we are.

@@ -26,15 +26,16 @@ models:
           - terminated: project was cancelled
         tests:
           - accepted_values:
-              values:
-                - on_track
-                - at_risk
-                - ahead_of_schedule
-                - no_payments_received
-                - final_overdue
-                - closed
-                - not_started
-                - terminated
+              arguments:
+                values:
+                  - on_track
+                  - at_risk
+                  - ahead_of_schedule
+                  - no_payments_received
+                  - final_overdue
+                  - closed
+                  - not_started
+                  - terminated
       - name: disbursement_rate
         description: "Fraction of grant amount received so far (0–1+)."
         tests:
