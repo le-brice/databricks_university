@@ -14,12 +14,12 @@ models:
         tests:
           - dbt_utils.expression_is_true:
               arguments:
-                expression: "grant_amount > 0"
+                expression: "> 0"
       - name: pct_grant_received
         tests:
           - dbt_utils.expression_is_true:
               arguments:
-                expression: "pct_grant_received >= 0"
+                expression: ">= 0"
 
   - name: mart_grant_utilization
     description: >
@@ -31,4 +31,4 @@ models:
         tests:
           - dbt_utils.expression_is_true:
               arguments:
-                expression: "utilization_rate between 0 and 1.1 or utilization_rate is null"
+                expression: "between 0 and 1.1 or utilization_rate is null"
