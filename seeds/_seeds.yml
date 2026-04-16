@@ -28,3 +28,31 @@ seeds:
         description: "Typical maximum grant size in euros."
       - name: payment_schedule_notes
         description: "Describes how this funder typically disburses payments."
+
+  - name: grant_applications
+    description: >
+      Grant applications submitted by TU/e researchers, including both awarded and
+      rejected proposals. Used to compute acceptance rates by funding body, research
+      theme, and department. Covers 2020-2024 submissions.
+    columns:
+      - name: application_id
+        description: "Primary key."
+        tests: [not_null, unique]
+      - name: research_theme
+        description: "Research area of the proposed project."
+      - name: funding_body
+        description: "Organisation the application was submitted to."
+      - name: department_name
+        description: "Faculty submitting the application."
+      - name: submission_date
+        description: "Date the proposal was submitted."
+      - name: outcome
+        description: "Result of the application: awarded, rejected, or pending."
+        tests:
+          - accepted_values:
+              arguments:
+                values: [awarded, rejected, pending]
+      - name: grant_amount_requested
+        description: "Amount requested in euros."
+      - name: review_duration_days
+        description: "Days from submission to decision. Null for pending applications."
