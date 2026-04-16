@@ -12,26 +12,66 @@ models:
       - name: project_id
         description: "Primary key."
         tests: [not_null, unique]
+      - name: title
+        description: "Descriptive project title."
+      - name: status
+        description: "Current project status: active, completed, pending, or terminated."
+      - name: funding_body
+        description: "Organisation that awarded the grant (NWO, ERC, Horizon Europe, ASML Research, etc.)."
+      - name: research_theme
+        description: "Broad research area (AI & Data Science, Semiconductor Technology, Energy Transition, etc.)."
       - name: grant_amount
         description: "Total awarded grant value in euros."
         tests:
           - dbt_utils.expression_is_true:
               arguments:
                 expression: "> 0"
+      - name: start_date
+        description: "Project start date."
+      - name: end_date
+        description: "Planned project end date. May be in the past for completed or terminated projects."
+      - name: department_name
+        description: "Name of the faculty hosting the project."
+      - name: faculty_name
+        description: "Faculty grouping. Same as department_name for academic faculties."
+      - name: principal_investigator
+        description: "Full name of the academic staff member leading the project."
+      - name: pi_role
+        description: "Role of the principal investigator (professor, associate_professor, etc.)."
+      - name: start_academic_year
+        description: "Dutch academic year in which the project started. Academic year begins in August (e.g. Aug 2023 = AY 2023)."
+      - name: project_duration_days
+        description: "Total project length in days, from start_date to end_date (or today for ongoing projects)."
+      - name: project_duration_years
+        description: "Total project length in years, rounded to 1 decimal place."
+      - name: annual_funding_intensity
+        description: "Grant amount divided by project duration in years. Useful for comparing projects of different lengths."
+      - name: payment_count
+        description: "Number of payments received against this project. Zero if no payments recorded."
+      - name: total_payments_received
+        description: "Sum of all payments received in euros. Zero if no payments recorded."
+      - name: advance_payments
+        description: "Total advance (upfront) payments received in euros."
+      - name: milestone_payments
+        description: "Total milestone (progress-linked) payments received in euros."
+      - name: final_payments
+        description: "Total final (project close) payments received in euros."
+      - name: overhead_payments
+        description: "Total overhead (indirect cost) payments received in euros."
+      - name: first_payment_date
+        description: "Date of the earliest payment received. Null if no payments recorded."
+      - name: last_payment_date
+        description: "Date of the most recent payment received. Null if no payments recorded."
       - name: pct_grant_received
-        description: "Percentage of grant disbursed so far. May exceed 100 in rare overpayment scenarios."
+        description: "Percentage of grant amount disbursed so far. May exceed 100 in rare overpayment scenarios."
         tests:
           - dbt_utils.expression_is_true:
               arguments:
                 expression: ">= 0"
-      - name: funding_body
-        description: "Organisation that awarded the grant (NWO, ERC, Horizon Europe, ASML Research, etc.)."
-      - name: payment_status
-        description: "Inherited from int_project_payment_status: on_track, at_risk, ahead_of_schedule, etc."
-      - name: annual_funding_intensity
-        description: "Grant amount divided by project duration in years. Useful for comparing projects of different lengths."
-      - name: payment_velocity
-        description: "Disbursement rate minus fraction of time elapsed. Positive = ahead of pace; negative = behind."
+      - name: remaining_grant
+        description: "grant_amount minus total_payments_received. Amount still expected to be disbursed."
+      - name: has_final_payment
+        description: "True if at least one final payment has been recorded. Indicates project is closing or closed."
 
   - name: mart_grant_utilization
     description: >
@@ -40,47 +80,109 @@ models:
       One row per department per academic year.
       Primary source for portfolio-level reporting.
     columns:
+      - name: department_name
+        description: "Name of the faculty or support department."
+      - name: faculty_name
+        description: "Faculty grouping. Academic departments use their own name; support departments are 'Support Services'."
+      - name: academic_year
+        description: "Dutch academic year (starts August). Derived from each project's start_date."
+      - name: total_projects
+        description: "Total number of projects started in this department and academic year."
+      - name: active_projects
+        description: "Number of projects currently with status = active."
+      - name: completed_projects
+        description: "Number of projects with status = completed."
+      - name: pending_projects
+        description: "Number of projects with status = pending (not yet started)."
+      - name: total_grant_value
+        description: "Sum of all awarded grant amounts for this department and academic year, in euros."
+      - name: avg_grant_size
+        description: "Average grant amount across all projects in this cohort, in euros."
+      - name: largest_grant
+        description: "Highest individual grant amount in this cohort, in euros."
+      - name: total_received
+        description: "Sum of all payments received across all projects in this cohort, in euros."
       - name: utilization_rate
-        description: "Total payments received as a fraction of total grants awarded. Null if no grants in that period."
+        description: "total_received divided by total_grant_value. Null if no grants. May slightly exceed 1.0 in overpayment scenarios."
         tests:
           - dbt_utils.expression_is_true:
               arguments:
                 expression: "between 0 and 1.1 or utilization_rate is null"
-      - name: total_grant_value
-        description: "Sum of awarded grants for this department and academic year."
+      - name: total_remaining
+        description: "Sum of remaining_grant across all projects. Total euros yet to be disbursed."
       - name: nwo_grant_total
-        description: "Total NWO grant value for this department and academic year."
+        description: "Total NWO grant value for this department and academic year, in euros."
       - name: erc_grant_total
-        description: "Total ERC grant value."
+        description: "Total ERC grant value, in euros."
       - name: horizon_grant_total
-        description: "Total Horizon Europe grant value."
+        description: "Total Horizon Europe grant value, in euros."
       - name: industry_grant_total
-        description: "Total industry partner grant value (ASML, Philips, NXP, Brainport, Eindhoven Engine)."
+        description: "Total industry partner grant value (ASML, Philips, NXP, Brainport, Eindhoven Engine), in euros."
+      - name: distinct_research_themes
+        description: "Number of distinct research themes represented in this cohort."
+      - name: nwo_project_count
+        description: "Number of NWO-funded projects in this cohort."
+      - name: erc_project_count
+        description: "Number of ERC-funded projects."
+      - name: horizon_project_count
+        description: "Number of Horizon Europe-funded projects."
 
   - name: mart_at_risk_projects
     description: >
       Projects with concerning payment patterns requiring Finance & Research Office attention.
-      Includes projects where: active projects are receiving payments >20pp slower than time elapsed,
-      active projects >10% through with zero payments received, or completed projects with no final payment.
+      Covers active projects receiving payments more than 20 percentage points slower than
+      time elapsed, active projects more than 10% through with zero payments, and completed
+      projects with no final payment recorded.
       Ordered by urgency_score descending — largest outstanding value under most time pressure first.
       Grain: one row per at-risk project.
     columns:
       - name: project_id
         description: "Primary key."
         tests: [not_null, unique]
+      - name: title
+        description: "Descriptive project title."
+      - name: research_theme
+        description: "Broad research area the project belongs to."
       - name: risk_status
-        description: "at_risk, no_payments_received, or final_overdue."
+        description: "at_risk (disbursing too slowly), no_payments_received (active with no payments), or final_overdue (completed without final payment)."
         tests:
           - accepted_values:
               arguments:
                 values: [at_risk, no_payments_received, final_overdue]
+      - name: funding_body
+        description: "Organisation that awarded the grant."
+      - name: payment_velocity
+        description: "disbursement_rate minus pct_time_elapsed as a fraction. Negative = falling behind expected pace."
+      - name: pct_time_elapsed
+        description: "Percentage of project duration that has passed. 0–100+."
+      - name: pct_grant_disbursed
+        description: "Percentage of grant amount received so far. 0–100+."
+      - name: grant_amount
+        description: "Total awarded grant value in euros."
+      - name: total_received
+        description: "Total payments received to date in euros."
+      - name: outstanding_amount
+        description: "grant_amount minus total_received. Euros yet to be disbursed."
+      - name: last_payment_date
+        description: "Date of the most recent payment received. Null if no payments ever recorded."
+      - name: days_since_last_payment
+        description: "Days elapsed since the last payment was received. Null if no payments ever recorded."
+      - name: start_date
+        description: "Project start date."
+      - name: end_date
+        description: "Planned project end date."
+      - name: days_to_deadline
+        description: "Days remaining until end_date. Negative if the deadline has already passed."
       - name: urgency_score
         description: >
-          Outstanding grant amount weighted by how far into the project we are.
-          Higher score = larger financial exposure + more time pressure. Used for prioritisation.
-      - name: outstanding_amount
-        description: "grant_amount minus total_received. Amount still to be disbursed."
-      - name: payment_velocity
-        description: "Disbursement rate minus pct_time_elapsed. Negative values indicate falling behind."
-      - name: days_to_deadline
-        description: "Days until project end_date. Negative if deadline already passed."
+          outstanding_amount multiplied by pct_time_elapsed (floored at 0.1).
+          Higher score = larger financial exposure combined with more time pressure.
+          Used to sort and prioritise funder follow-up.
+      - name: department_name
+        description: "Faculty hosting the project."
+      - name: faculty_name
+        description: "Faculty grouping."
+      - name: principal_investigator
+        description: "Full name of the PI leading the project."
+      - name: pi_role
+        description: "Role of the principal investigator."

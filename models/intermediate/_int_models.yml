@@ -13,17 +13,53 @@ models:
       - name: project_id
         description: "Primary key. Foreign key to stg_research_projects."
         tests: [not_null, unique]
+      - name: status
+        description: "Raw project status from source: active, completed, pending, or terminated."
+      - name: grant_amount
+        description: "Total awarded grant value in euros."
+      - name: start_date
+        description: "Project start date."
+      - name: end_date
+        description: "Planned project end date."
+      - name: funding_body
+        description: "Organisation that awarded the grant (NWO, ERC, Horizon Europe, ASML Research, etc.)."
+      - name: department_id
+        description: "Foreign key to stg_departments. Faculty hosting the project."
+      - name: payment_count
+        description: "Number of payments received against this project. Zero if no payments recorded."
+      - name: total_received
+        description: "Sum of all payments received in euros. Zero if no payments recorded."
+      - name: final_payments_received
+        description: "Sum of final-type payments received in euros. Zero if none recorded."
+      - name: last_payment_date
+        description: "Date of the most recent payment received. Null if no payments ever recorded."
+      - name: days_since_last_payment
+        description: "Days elapsed since the last payment was received. Null if no payments ever recorded."
+      - name: disbursement_rate
+        description: "Fraction of grant amount received so far (0–1+). Zero if no payments."
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: ">= 0"
+      - name: pct_time_elapsed
+        description: >
+          Fraction of project duration that has elapsed (0–1+).
+          Computed as days since start_date divided by total project duration.
+      - name: payment_velocity
+        description: >
+          disbursement_rate minus pct_time_elapsed.
+          Positive = ahead of expected pace; negative = behind schedule.
       - name: payment_status
         description: >
           Derived classification:
-          - on_track: disbursement rate roughly matches time elapsed
-          - at_risk: disbursing >20 percentage points slower than time elapsed
-          - ahead_of_schedule: disbursing >10 percentage points faster than time elapsed
-          - no_payments_received: active project >10% through with zero payments
-          - final_overdue: completed project with no final payment recorded
-          - closed: completed and final payment received
-          - not_started: project is in pending status
-          - terminated: project was cancelled
+          on_track: disbursement rate roughly matches time elapsed.
+          at_risk: disbursing more than 20 percentage points slower than time elapsed.
+          ahead_of_schedule: disbursing more than 10 percentage points faster than time elapsed.
+          no_payments_received: active project more than 10% through with zero payments.
+          final_overdue: completed project with no final payment recorded.
+          closed: completed and final payment received.
+          not_started: project is in pending status.
+          terminated: project was cancelled.
         tests:
           - accepted_values:
               arguments:
@@ -36,15 +72,3 @@ models:
                   - closed
                   - not_started
                   - terminated
-      - name: disbursement_rate
-        description: "Fraction of grant amount received so far (0–1+)."
-        tests:
-          - dbt_utils.expression_is_true:
-              arguments:
-                expression: ">= 0"
-      - name: pct_time_elapsed
-        description: "Fraction of project duration that has elapsed (0–1+). Null for projects with no end date."
-      - name: payment_velocity
-        description: >
-          disbursement_rate minus pct_time_elapsed.
-          Positive = ahead of expected pace; negative = behind.
