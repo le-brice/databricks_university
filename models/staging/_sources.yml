@@ -5,49 +5,128 @@ sources:
   - name: raw_hr
     database: demo_tue
     schema: raw
-    description: "HR domain raw tables — employees and departments (used as reference for research PIs)."
+    description: "HR domain raw tables — employees and departments. Loaded nightly from the TU/e HR system."
     tables:
       - name: departments
+        description: "TU/e organisational units: 9 academic faculties and 6 support departments."
         columns:
           - name: department_id
+            description: "Primary key. Integer identifier for the department."
             tests: [not_null, unique]
           - name: department_name
+            description: "Full name of the department (e.g. 'Electrical Engineering')."
             tests: [not_null]
+          - name: faculty_name
+            description: "Faculty grouping. Academic departments use their own name; support departments are grouped under 'Support Services'."
 
       - name: employees
+        description: "All TU/e employees — academic staff (1-300) and support staff (301-500). Includes active and departed employees."
+        config:
+          loaded_at_field: hire_date
+          freshness:
+            warn_after: {count: 7, period: day}
+            error_after: {count: 14, period: day}
         columns:
           - name: employee_id
+            description: "Primary key."
             tests: [not_null, unique]
+          - name: first_name
+            description: "Employee first name."
+          - name: last_name
+            description: "Employee last name."
           - name: department_id
+            description: "Foreign key to departments. Determines which faculty or support unit the employee belongs to."
             tests: [not_null]
+          - name: role
+            description: >
+              Job role. Academic staff: professor, associate_professor, assistant_professor,
+              postdoc, phd_candidate, lecturer, researcher.
+              Support staff: admin_staff, technician, it_specialist, financial_analyst,
+              hr_officer, facility_manager.
+          - name: hire_date
+            description: "Date the employee joined TU/e."
+          - name: termination_date
+            description: "Date the employee left TU/e. Null for currently active staff (~85% of records)."
           - name: employment_type
+            description: "Contract type: full_time, part_time, temporary, or visiting."
             tests:
               - accepted_values:
-                  values: [full_time, part_time, temporary, visiting]
+                  arguments:
+                    values: [full_time, part_time, temporary, visiting]
 
   - name: raw_finance
     database: demo_tue
     schema: raw
-    description: "Research finance raw tables — projects and grant payments."
+    description: "Research finance raw tables — projects and grant payments. Loaded nightly from the TU/e financial system."
     tables:
       - name: research_projects
+        description: >
+          One row per research project. Covers all funding bodies active at TU/e:
+          NWO, ERC, Horizon Europe, and Eindhoven-area industry partners
+          (ASML, Philips, NXP, Brainport Development, Eindhoven Engine).
+          Also includes ZonMW, KNAW, and STW funded projects.
+        config:
+          loaded_at_field: start_date
+          freshness:
+            warn_after: {count: 30, period: day}
+            error_after: {count: 60, period: day}
         columns:
           - name: project_id
+            description: "Primary key."
             tests: [not_null, unique]
+          - name: title
+            description: "Descriptive project title generated from research theme and technology area."
+          - name: principal_investigator_id
+            description: "Foreign key to employees. The academic staff member leading the project."
+          - name: department_id
+            description: "Foreign key to departments. The faculty hosting the project."
+          - name: funding_body
+            description: "Organisation awarding the grant (NWO, ERC, Horizon Europe, ASML Research, etc.)."
+          - name: grant_amount
+            description: "Total awarded grant value in euros. Ranges from €50K (small NWO/industry) to €5M (large ERC/Horizon)."
+            tests: [not_null]
+          - name: start_date
+            description: "Project start date."
+          - name: end_date
+            description: "Planned project end date. May be in the past for completed or terminated projects."
           - name: status
+            description: "Current project status: active, completed, pending, or terminated."
             tests:
               - accepted_values:
-                  values: [active, completed, pending, terminated]
-          - name: grant_amount
-            tests: [not_null]
+                  arguments:
+                    values: [active, completed, pending, terminated]
+          - name: research_theme
+            description: >
+              Broad research area. One of: AI & Data Science, Semiconductor Technology,
+              Energy Transition, Smart Mobility, Health Technology, Quantum Computing,
+              Circular Economy, Photonics, Sustainable Architecture, Bio-inspired Engineering.
 
       - name: grant_payments
+        description: >
+          Individual payment disbursements against research projects.
+          Each project receives 2-3 payments over its lifetime, typically a mix of
+          advance, milestone, and final payments. One row per payment.
+        config:
+          loaded_at_field: payment_date
+          freshness:
+            warn_after: {count: 90, period: day}
+            error_after: {count: 180, period: day}
         columns:
           - name: payment_id
+            description: "Primary key."
             tests: [not_null, unique]
           - name: project_id
+            description: "Foreign key to research_projects."
             tests: [not_null]
+          - name: payment_date
+            description: "Date the payment was received from the funding body."
+          - name: amount
+            description: >
+              Payment amount in euros. Proportional to grant_amount by type:
+              advance 10-25%, milestone 15-35%, final 20-40%, overhead 2-7%.
           - name: payment_type
+            description: "Type of disbursement: advance (upfront), milestone (progress-linked), final (project close), or overhead (indirect costs)."
             tests:
               - accepted_values:
-                  values: [advance, milestone, final, overhead]
+                  arguments:
+                    values: [advance, milestone, final, overhead]
