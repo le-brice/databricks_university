@@ -16,7 +16,8 @@ seeds:
         description: "Broad category: government, EU, or industry."
         tests:
           - accepted_values:
-              values: [government, EU, industry]
+              arguments:
+                values: [government, EU, industry]
       - name: country
         description: "Country or region of the funding body."
       - name: focus_area
