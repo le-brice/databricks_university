@@ -8,7 +8,10 @@ models:
         description: "Primary key."
         tests: [not_null, unique]
       - name: department_name
+        description: "Full name of the department."
         tests: [not_null]
+      - name: faculty_name
+        description: "Faculty grouping. Academic departments use their own name; support departments are grouped under 'Support Services'."
 
   - name: stg_employees
     description: "Cleaned employee records. Used as reference for principal investigators on research projects."
@@ -16,18 +19,38 @@ models:
       - name: employee_id
         description: "Primary key."
         tests: [not_null, unique]
+      - name: first_name
+        description: "Employee first name."
+      - name: last_name
+        description: "Employee last name."
+      - name: full_name
+        description: "Concatenation of first_name and last_name. Used for display in mart models."
       - name: department_id
+        description: "Foreign key to stg_departments."
         tests:
           - not_null
           - relationships:
               to: ref('stg_departments')
               field: department_id
+      - name: role
+        description: >
+          Job role. Academic: professor, associate_professor, assistant_professor,
+          postdoc, phd_candidate, lecturer, researcher.
+          Support: admin_staff, technician, it_specialist, financial_analyst,
+          hr_officer, facility_manager.
+      - name: hire_date
+        description: "Date the employee joined TU/e."
+        tests: [not_null]
+      - name: termination_date
+        description: "Date the employee left TU/e. Null for currently active staff."
       - name: employment_type
+        description: "Contract type."
         tests:
           - accepted_values:
-              values: [full_time, part_time, temporary, visiting]
-      - name: hire_date
-        tests: [not_null]
+              arguments:
+                values: [full_time, part_time, temporary, visiting]
+      - name: _loaded_at
+        description: "Timestamp when this row was processed by dbt. Used for pipeline monitoring."
 
   - name: stg_research_projects
     description: "Research projects with funding details. Covers NWO, ERC, Horizon Europe, and industry partners (ASML, Philips, NXP)."
@@ -35,25 +58,43 @@ models:
       - name: project_id
         description: "Primary key."
         tests: [not_null, unique]
-      - name: department_id
-        tests:
-          - relationships:
-              to: ref('stg_departments')
-              field: department_id
+      - name: title
+        description: "Descriptive project title."
       - name: principal_investigator_id
+        description: "Foreign key to stg_employees. The academic staff member leading the project."
         tests:
           - relationships:
               to: ref('stg_employees')
               field: employee_id
-      - name: status
+      - name: department_id
+        description: "Foreign key to stg_departments. The faculty hosting the project."
         tests:
-          - accepted_values:
-              values: [active, completed, pending, terminated]
+          - relationships:
+              to: ref('stg_departments')
+              field: department_id
+      - name: funding_body
+        description: "Organisation awarding the grant."
       - name: grant_amount
+        description: "Total awarded grant value in euros."
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: "grant_amount > 0"
+              arguments:
+                expression: "> 0"
+      - name: start_date
+        description: "Project start date."
+      - name: end_date
+        description: "Planned project end date."
+      - name: status
+        description: "Current project status."
+        tests:
+          - accepted_values:
+              arguments:
+                values: [active, completed, pending, terminated]
+      - name: research_theme
+        description: "Broad research area (AI & Data Science, Semiconductor Technology, Energy Transition, etc.)."
+      - name: _loaded_at
+        description: "Timestamp when this row was processed by dbt."
 
   - name: stg_grant_payments
     description: "Individual grant payment disbursements against research projects."
@@ -62,17 +103,26 @@ models:
         description: "Primary key."
         tests: [not_null, unique]
       - name: project_id
+        description: "Foreign key to stg_research_projects."
         tests:
           - not_null
           - relationships:
               to: ref('stg_research_projects')
               field: project_id
-      - name: payment_type
-        tests:
-          - accepted_values:
-              values: [advance, milestone, final, overhead]
+      - name: payment_date
+        description: "Date the payment was received from the funding body."
       - name: amount
+        description: "Payment amount in euros."
         tests:
           - not_null
           - dbt_utils.expression_is_true:
-              expression: "amount > 0"
+              arguments:
+                expression: "> 0"
+      - name: payment_type
+        description: "Type of disbursement: advance, milestone, final, or overhead."
+        tests:
+          - accepted_values:
+              arguments:
+                values: [advance, milestone, final, overhead]
+      - name: _loaded_at
+        description: "Timestamp when this row was processed by dbt."
