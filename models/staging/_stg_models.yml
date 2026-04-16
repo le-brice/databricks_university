@@ -30,8 +30,9 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('stg_departments')
-              field: department_id
+              arguments:
+                to: ref('stg_departments')
+                field: department_id
       - name: role
         description: >
           Job role. Academic: professor, associate_professor, assistant_professor,
@@ -64,14 +65,16 @@ models:
         description: "Foreign key to stg_employees. The academic staff member leading the project."
         tests:
           - relationships:
-              to: ref('stg_employees')
-              field: employee_id
+              arguments:
+                to: ref('stg_employees')
+                field: employee_id
       - name: department_id
         description: "Foreign key to stg_departments. The faculty hosting the project."
         tests:
           - relationships:
-              to: ref('stg_departments')
-              field: department_id
+              arguments:
+                to: ref('stg_departments')
+                field: department_id
       - name: funding_body
         description: "Organisation awarding the grant."
       - name: grant_amount
@@ -107,8 +110,9 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('stg_research_projects')
-              field: project_id
+              arguments:
+                to: ref('stg_research_projects')
+                field: project_id
       - name: payment_date
         description: "Date the payment was received from the funding body."
       - name: amount

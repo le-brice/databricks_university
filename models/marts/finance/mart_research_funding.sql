@@ -1,3 +1,8 @@
+{{ config(
+    materialized = 'table',
+    tags         = ['finance', 'grants', 'daily']
+) }}
+
 -- mart_research_funding: Research project portfolio with funding progress.
 -- Grain: one row per research project.
 
@@ -84,7 +89,10 @@ joined as (
         p.grant_amount - coalesce(ps.total_payments_received, 0)           as remaining_grant,
 
         -- Flag: project receiving final payment or complete
-        ps.final_payments > 0                                               as has_final_payment
+        ps.final_payments > 0                                               as has_final_payment,
+
+        -- Pipeline metadata
+        current_timestamp()                                                 as _loaded_at
 
     from projects p
     left join departments d using (department_id)
