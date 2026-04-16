@@ -1,0 +1,51 @@
+application_id,research_theme,funding_body,department_name,submission_date,outcome,grant_amount_requested,review_duration_days
+APP-001,AI & Data Science,NWO,Mathematics & Computer Science,2021-03-15,awarded,450000,127
+APP-002,Semiconductor Technology,NWO,Electrical Engineering,2021-06-20,rejected,380000,142
+APP-003,Energy Transition,NWO,Chemical Engineering & Chemistry,2022-01-10,awarded,520000,118
+APP-004,Health Technology,NWO,Biomedical Engineering,2022-04-05,rejected,290000,135
+APP-005,Quantum Computing,NWO,Physics,2022-09-12,awarded,650000,156
+APP-006,Circular Economy,NWO,Chemical Engineering & Chemistry,2023-02-18,rejected,410000,148
+APP-007,Smart Mobility,NWO,Mechanical Engineering,2023-05-22,awarded,480000,139
+APP-008,Bio-inspired Engineering,NWO,Biomedical Engineering,2023-10-08,rejected,320000,162
+APP-009,Photonics,NWO,Electrical Engineering,2024-01-15,pending,550000,89
+APP-010,AI & Data Science,NWO,Mathematics & Computer Science,2024-04-20,rejected,430000,67
+APP-011,Quantum Computing,ERC,Physics,2020-11-05,awarded,2100000,312
+APP-012,AI & Data Science,ERC,Mathematics & Computer Science,2021-03-20,rejected,1850000,298
+APP-013,Semiconductor Technology,ERC,Electrical Engineering,2021-09-14,rejected,2400000,334
+APP-014,Health Technology,ERC,Biomedical Engineering,2022-02-28,awarded,1950000,287
+APP-015,Photonics,ERC,Physics,2022-08-10,rejected,2250000,318
+APP-016,Quantum Computing,ERC,Physics,2023-03-15,rejected,2800000,342
+APP-017,Bio-inspired Engineering,ERC,Biomedical Engineering,2023-09-22,pending,2100000,145
+APP-018,AI & Data Science,ERC,Mathematics & Computer Science,2024-02-14,rejected,1750000,112
+APP-019,Energy Transition,Horizon Europe,Chemical Engineering & Chemistry,2021-04-12,awarded,1200000,234
+APP-020,Smart Mobility,Horizon Europe,Mechanical Engineering,2021-10-05,rejected,980000,251
+APP-021,Semiconductor Technology,Horizon Europe,Electrical Engineering,2022-03-18,rejected,1450000,228
+APP-022,AI & Data Science,Horizon Europe,Mathematics & Computer Science,2022-07-25,awarded,1100000,219
+APP-023,Health Technology,Horizon Europe,Biomedical Engineering,2022-11-14,rejected,890000,243
+APP-024,Circular Economy,Horizon Europe,Chemical Engineering & Chemistry,2023-04-08,rejected,1350000,267
+APP-025,Sustainable Architecture,Horizon Europe,Built Environment,2023-08-20,awarded,1050000,198
+APP-026,Energy Transition,Horizon Europe,Chemical Engineering & Chemistry,2024-01-30,pending,1200000,134
+APP-027,Semiconductor Technology,ASML Research,Electrical Engineering,2021-05-10,awarded,320000,67
+APP-028,Photonics,ASML Research,Physics,2021-09-22,awarded,280000,58
+APP-029,AI & Data Science,ASML Research,Mathematics & Computer Science,2022-02-14,rejected,250000,72
+APP-030,Semiconductor Technology,ASML Research,Electrical Engineering,2022-08-05,awarded,350000,63
+APP-031,Quantum Computing,ASML Research,Physics,2023-01-18,awarded,290000,55
+APP-032,Photonics,ASML Research,Electrical Engineering,2023-07-12,rejected,310000,69
+APP-033,Health Technology,Philips Research,Biomedical Engineering,2021-06-08,awarded,180000,45
+APP-034,AI & Data Science,Philips Research,Mathematics & Computer Science,2021-11-20,awarded,220000,52
+APP-035,Smart Mobility,Philips Research,Industrial Engineering & Innovation Sciences,2022-05-15,rejected,195000,61
+APP-036,Health Technology,Philips Research,Biomedical Engineering,2022-10-28,awarded,280000,48
+APP-037,Bio-inspired Engineering,Philips Research,Biomedical Engineering,2023-04-14,rejected,175000,57
+APP-038,Semiconductor Technology,NXP Semiconductors,Electrical Engineering,2021-07-15,awarded,260000,54
+APP-039,AI & Data Science,NXP Semiconductors,Mathematics & Computer Science,2022-01-28,rejected,220000,63
+APP-040,Semiconductor Technology,NXP Semiconductors,Electrical Engineering,2022-06-10,awarded,290000,49
+APP-041,Photonics,NXP Semiconductors,Physics,2023-02-22,rejected,240000,58
+APP-042,Smart Mobility,NXP Semiconductors,Industrial Engineering & Innovation Sciences,2023-09-05,pending,210000,71
+APP-043,Smart Mobility,Brainport Development,Mechanical Engineering,2021-08-20,awarded,150000,38
+APP-044,Sustainable Architecture,Brainport Development,Built Environment,2022-03-10,awarded,130000,42
+APP-045,AI & Data Science,Brainport Development,Industrial Engineering & Innovation Sciences,2022-09-18,rejected,175000,51
+APP-046,Energy Transition,Brainport Development,Chemical Engineering & Chemistry,2023-03-25,awarded,160000,45
+APP-047,Circular Economy,Brainport Development,Chemical Engineering & Chemistry,2023-11-08,rejected,140000,39
+APP-048,Smart Mobility,Eindhoven Engine,Mechanical Engineering,2022-04-14,awarded,120000,35
+APP-049,AI & Data Science,Eindhoven Engine,Mathematics & Computer Science,2022-10-05,awarded,145000,41
+APP-050,Sustainable Architecture,Eindhoven Engine,Built Environment,2023-05-20,rejected,110000,37
