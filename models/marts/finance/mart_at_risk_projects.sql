@@ -72,7 +72,10 @@ joined as (
         d.department_name,
         d.faculty_name,
         e.full_name as principal_investigator,
-        e.role as pi_role
+        e.role as pi_role,
+
+        -- Pipeline metadata
+        current_timestamp() as _loaded_at
 
     from at_risk as ar
     inner join projects as p on ar.project_id = p.project_id

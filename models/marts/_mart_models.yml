@@ -72,6 +72,8 @@ models:
         description: "grant_amount minus total_payments_received. Amount still expected to be disbursed."
       - name: has_final_payment
         description: "True if at least one final payment has been recorded. Indicates project is closing or closed."
+      - name: _loaded_at
+        description: "Timestamp when this row was written by dbt. Used for model freshness checks."
 
   - name: mart_grant_utilization
     description: >
@@ -126,6 +128,8 @@ models:
         description: "Number of ERC-funded projects."
       - name: horizon_project_count
         description: "Number of Horizon Europe-funded projects."
+      - name: _loaded_at
+        description: "Timestamp when this row was written by dbt. Used for model freshness checks."
 
   - name: mart_at_risk_projects
     description: >
@@ -186,3 +190,5 @@ models:
         description: "Full name of the PI leading the project."
       - name: pi_role
         description: "Role of the principal investigator."
+      - name: _loaded_at
+        description: "Timestamp when this row was written by dbt. Used for model freshness checks."

@@ -48,7 +48,10 @@ dept_year_summary as (
         -- Project counts per funding body
         sum(case when funding_body = 'NWO'            then 1 else 0 end)   as nwo_project_count,
         sum(case when funding_body = 'ERC'            then 1 else 0 end)   as erc_project_count,
-        sum(case when funding_body = 'Horizon Europe' then 1 else 0 end)   as horizon_project_count
+        sum(case when funding_body = 'Horizon Europe' then 1 else 0 end)   as horizon_project_count,
+
+        -- Pipeline metadata
+        current_timestamp()                                                 as _loaded_at
 
     from funding
     group by department_name, faculty_name, start_academic_year
