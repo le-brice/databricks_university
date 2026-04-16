@@ -1,3 +1,8 @@
+{{ config(
+    materialized = 'table',
+    tags         = ['finance', 'grants', 'daily']
+) }}
+
 -- mart_research_funding: Research project portfolio with funding progress.
 -- Grain: one row per research project.
 

@@ -1,3 +1,8 @@
+{{ config(
+    materialized = 'table',
+    tags         = ['finance', 'risk', 'daily']
+) }}
+
 -- mart_at_risk_projects: Active projects with concerning payment patterns.
 -- Ordered by urgency score: largest outstanding value under most time pressure.
 -- Used by the Finance & Research Office to prioritise funder follow-up.

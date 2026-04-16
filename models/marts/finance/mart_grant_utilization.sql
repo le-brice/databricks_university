@@ -1,3 +1,8 @@
+{{ config(
+    materialized = 'table',
+    tags         = ['finance', 'grants', 'daily']
+) }}
+
 -- mart_grant_utilization: Grant utilization by department and academic year.
 -- Grain: one row per department per academic year.
 
