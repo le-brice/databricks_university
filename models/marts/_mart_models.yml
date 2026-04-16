@@ -5,82 +5,30 @@ models:
   - name: mart_research_funding
     description: >
       Research project portfolio with payment progress and funding body details.
-      One row per research project. Shows how much of each grant has been disbursed,
-      broken down by payment type (advance, milestone, final, overhead).
-      Primary source for project-level grant tracking.
+      One row per research project. Shows how much of each grant has been disbursed.
     columns:
       - name: project_id
         description: "Primary key."
         tests: [not_null, unique]
       - name: grant_amount
-        description: "Total awarded grant value in euros."
         tests:
           - dbt_utils.expression_is_true:
               arguments:
                 expression: "> 0"
       - name: pct_grant_received
-        description: "Percentage of grant disbursed so far. May exceed 100 in rare overpayment scenarios."
         tests:
           - dbt_utils.expression_is_true:
               arguments:
                 expression: ">= 0"
-      - name: funding_body
-        description: "Organisation that awarded the grant (NWO, ERC, Horizon Europe, ASML Research, etc.)."
-      - name: payment_status
-        description: "Inherited from int_project_payment_status: on_track, at_risk, ahead_of_schedule, etc."
-      - name: annual_funding_intensity
-        description: "Grant amount divided by project duration in years. Useful for comparing projects of different lengths."
-      - name: payment_velocity
-        description: "Disbursement rate minus fraction of time elapsed. Positive = ahead of pace; negative = behind."
 
   - name: mart_grant_utilization
     description: >
       Aggregated grant utilization by department and academic year.
       Includes funding body breakdown (NWO, ERC, Horizon Europe, industry).
       One row per department per academic year.
-      Primary source for portfolio-level reporting.
     columns:
       - name: utilization_rate
-        description: "Total payments received as a fraction of total grants awarded. Null if no grants in that period."
         tests:
           - dbt_utils.expression_is_true:
               arguments:
                 expression: "between 0 and 1.1 or utilization_rate is null"
-      - name: total_grant_value
-        description: "Sum of awarded grants for this department and academic year."
-      - name: nwo_grant_total
-        description: "Total NWO grant value for this department and academic year."
-      - name: erc_grant_total
-        description: "Total ERC grant value."
-      - name: horizon_grant_total
-        description: "Total Horizon Europe grant value."
-      - name: industry_grant_total
-        description: "Total industry partner grant value (ASML, Philips, NXP, Brainport, Eindhoven Engine)."
-
-  - name: mart_at_risk_projects
-    description: >
-      Projects with concerning payment patterns requiring Finance & Research Office attention.
-      Includes projects where: active projects are receiving payments >20pp slower than time elapsed,
-      active projects >10% through with zero payments received, or completed projects with no final payment.
-      Ordered by urgency_score descending — largest outstanding value under most time pressure first.
-      Grain: one row per at-risk project.
-    columns:
-      - name: project_id
-        description: "Primary key."
-        tests: [not_null, unique]
-      - name: risk_status
-        description: "at_risk, no_payments_received, or final_overdue."
-        tests:
-          - accepted_values:
-              arguments:
-                values: [at_risk, no_payments_received, final_overdue]
-      - name: urgency_score
-        description: >
-          Outstanding grant amount weighted by how far into the project we are.
-          Higher score = larger financial exposure + more time pressure. Used for prioritisation.
-      - name: outstanding_amount
-        description: "grant_amount minus total_received. Amount still to be disbursed."
-      - name: payment_velocity
-        description: "Disbursement rate minus pct_time_elapsed. Negative values indicate falling behind."
-      - name: days_to_deadline
-        description: "Days until project end_date. Negative if deadline already passed."
