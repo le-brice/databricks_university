@@ -1,0 +1,24 @@
+models:
+- name: research_themes_acceptance
+  description: This model provides a summary of application acceptance rates by research
+    theme. It calculates the total number of applications, the number of awarded applications,
+    and the acceptance rate percentage for each research theme. This information is
+    useful for analyzing the popularity and success rate of different research themes.
+  columns:
+  - name: research_theme
+    description: The category or subject area of the research application.
+    data_tests:
+      - not_null
+  - name: total_applications
+    description: The total number of applications submitted for the research theme.
+    data_tests:
+      - not_null
+  - name: awarded_applications
+    description: The number of applications that were awarded for the research theme.
+    data_tests:
+      - not_null
+  - name: acceptance_rate_pct
+    description: The percentage of applications that were awarded out of the total
+      applications for the research theme.
+    data_tests:
+      - not_null
