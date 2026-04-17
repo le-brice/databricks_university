@@ -131,6 +131,65 @@ models:
       - name: _loaded_at
         description: "Timestamp when this row was written by dbt. Used for model freshness checks."
 
+  - name: mart_application_pipeline
+    description: >
+      Grant application funnel enriched with acceptance rates.
+      One row per application submission. Covers all outcomes (awarded, rejected, pending)
+      with pre-calculated acceptance rates by funding body, department, and research theme
+      via window functions — ready for direct use in BI without further aggregation.
+    columns:
+      - name: application_id
+        description: "Primary key."
+        tests: [not_null, unique]
+      - name: research_theme
+        description: "Broad research area of the application."
+      - name: funding_body
+        description: "Organisation the application was submitted to."
+      - name: department_name
+        description: "TU/e department that submitted the application."
+      - name: submission_date
+        description: "Date the application was submitted."
+      - name: outcome
+        description: "Result of the application: awarded, rejected, or pending."
+        tests:
+          - accepted_values:
+              arguments:
+                values: [awarded, rejected, pending]
+      - name: grant_amount_requested
+        description: "Amount requested in euros."
+        tests:
+          - dbt_utils.expression_is_true:
+              arguments:
+                expression: "> 0"
+      - name: review_duration_days
+        description: "Number of days from submission to outcome decision."
+      - name: funder_type
+        description: "Funder category: Public (NWO), EU (ERC, Horizon Europe), or Industry."
+      - name: is_awarded
+        description: "True if the application was awarded."
+      - name: is_rejected
+        description: "True if the application was rejected."
+      - name: is_pending
+        description: "True if the outcome is not yet known."
+      - name: submission_year
+        description: "Calendar year of submission."
+      - name: submission_academic_year
+        description: "Dutch academic year of submission (starts August)."
+      - name: review_speed
+        description: "Review duration bucket: fast (<=60 days), standard (<=150), slow (>150)."
+      - name: funding_body_acceptance_rate
+        description: "Percentage of applications awarded for this funding body across all years."
+      - name: dept_acceptance_rate
+        description: "Percentage of applications awarded for this department across all years."
+      - name: theme_acceptance_rate
+        description: "Percentage of applications awarded for this research theme across all years."
+      - name: funding_body_total_applications
+        description: "Total number of applications submitted to this funding body."
+      - name: dept_total_applications
+        description: "Total number of applications submitted by this department."
+      - name: _loaded_at
+        description: "Timestamp when this row was written by dbt."
+
   - name: mart_at_risk_projects
     description: >
       Projects with concerning payment patterns requiring Finance & Research Office attention.
