@@ -1,0 +1,18 @@
+models:
+- name: acceptance_rate
+  description: This model calculates the acceptance rate of funding applications for
+    various funding bodies. It determines the percentage of applications that were
+    awarded funding out of the total applications submitted, specifically for selected
+    funding bodies. The results are ordered by acceptance rate in descending order
+    to highlight the most successful funding bodies.
+  columns:
+  - name: funding_body
+    description: The organization or entity providing the funding for which the acceptance
+      rate is calculated.
+    data_tests:
+      - not_null
+  - name: acceptance_rate
+    description: The percentage of applications awarded funding out of the total applications
+      submitted, rounded to one decimal place.
+    data_tests:
+      - not_null
