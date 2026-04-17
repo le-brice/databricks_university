@@ -1,0 +1,16 @@
+models:
+- name: research_acceptance
+  description: This model calculates the acceptance rate of research funding proposals
+    by different funding bodies. It focuses on specific organizations such as NWO,
+    ERC, Horizon Europe, and others, providing insights into the success rate of completed
+    proposals.
+  columns:
+  - name: funding_body
+    description: The organization providing research funding, such as NWO or ERC.
+    data_tests:
+      - not_null
+  - name: acceptance_rate
+    description: The proportion of completed research proposals out of the total submitted
+      to a funding body.
+    data_tests:
+      - not_null
